@@ -9,6 +9,8 @@ import static com.epam.brest.CoefficientPrice.*;
 public class Main {
 
     private final static Logger logger = Logger.getLogger(String.valueOf(Main.class));
+    private static Double koefficientDistance, koefficientKilogramm;
+
 
     public static void main(String[] args) throws IOException{
 
@@ -29,8 +31,12 @@ public class Main {
             if (!isExitValue(inputValue)) {
                 if (isCorrectDoubleValue(inputValue)) {
                     switch (i){
-                        case 0:  System.out.println(getPriceDistance(Double.parseDouble(inputValue))); break;
-                        case 1:  System.out.println(getPriceKilogramm(Double.parseDouble(inputValue))); break;
+                        case 0: koefficientDistance = getPriceDistance(Double.parseDouble(inputValue));
+                        System.out.println(koefficientDistance);
+                            break;
+                        case 1:  koefficientKilogramm = getPriceKilogramm(Double.parseDouble(inputValue));
+                            System.out.println(koefficientKilogramm);
+                            break;
                     }
                     enteredValues[i] = Double.parseDouble(inputValue);
                     i++;
@@ -38,8 +44,7 @@ public class Main {
             }
 
             if (i == 2) {
-                Double calc = enteredValues[0]*getPriceDistance(Double.parseDouble(inputValue))
-                        + enteredValues[1]*getPriceKilogramm(Double.parseDouble(inputValue));
+                double calc = enteredValues[0]*koefficientDistance + enteredValues[1]*koefficientKilogramm;
                 System.out.println("Price: $" + calc);
                 i = 0;
             }

@@ -12,17 +12,17 @@ public class CoefficientPrice {
     public CoefficientPrice() {
     }
 
-    public static Map<String,Double> getPricePerDistance() throws IOException{
+    private static HashMap getPricePerDistance() throws IOException{
         ObjectMapper mapperDistance = new ObjectMapper();
         return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficientPerDistance), HashMap.class);
     }
 
-    public static Map<String,Double> getPricePerKilogramm() throws IOException{
+    private static HashMap getPricePerKilogramm() throws IOException{
         ObjectMapper mapperKilogramm = new ObjectMapper();
         return mapperKilogramm.readValue(readInformationFromFile(pathToFileCoefficientPerKilogramm), HashMap.class);
     }
 
-    public static String readInformationFromFile(String pathToFileCoefficientPerDistance){
+    private static String readInformationFromFile(String pathToFileCoefficientPerDistance){
         String jsonLine, allString="";
         try(InputStream inputStream = new FileInputStream(pathToFileCoefficientPerDistance))
         {
@@ -42,25 +42,27 @@ public class CoefficientPrice {
 
 
 
-    public static Double getPriceDistance(Double valueDistance) throws IOException {
-        Map<String , Double> mapForSearchingDistance = getPricePerDistance();
-        return getPrice(valueDistance, mapForSearchingDistance);
+    static Double getPriceDistance(Double valueDistance) throws IOException {
+        return getPrice(valueDistance, getPricePerDistance());
     }
 
 
-    public static Double getPriceKilogramm(Double valueKilogramm) throws IOException {
-        Map<String , Double> mapForSearchingKilogramm = getPricePerKilogramm();
-        return getPrice(valueKilogramm, mapForSearchingKilogramm);
+     static Double getPriceKilogramm(Double valueKilogramm) throws IOException {
+
+        return getPrice(valueKilogramm, getPricePerKilogramm());
     }
 
 
-     public static Double getPrice(Double value, Map<String, Double> mapForSearching){
-         Double priceValue = 0d;
+    private static Double getPrice(Double value, Map<String, Double> mapForSearching){
+         Double priceValue = 0d, result;
 
+         System.out.println(mapForSearching);
 
          for(Map.Entry itemFromMap : mapForSearching.entrySet()) {
-             System.out.println(itemFromMap.getKey());
-             if(Double.parseDouble((String) itemFromMap.getKey()) <= value){
+             result = Double.parseDouble((String) itemFromMap.getKey());
+             System.out.println(result);
+
+             if(result <= value){
                  priceValue = (Double) itemFromMap.getValue();
              }
          }
