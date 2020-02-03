@@ -1,46 +1,52 @@
 package com.epam.brest;
 
+
+import java.io.*;
 import java.util.Scanner;
+import java.util.logging.Logger;
+import static com.epam.brest.CoefficientPrice.*;
 
 public class Main {
 
-    public static void main(String[] args) {
+    private final static Logger logger = Logger.getLogger(String.valueOf(Main.class));
 
-        Double[] enteredValues = new Double[4];
+    public static void main(String[] args) throws IOException{
+
+        Double[] enteredValues = new Double[2];
 
         Scanner scanner = new Scanner(System.in);
         String inputValue;
         int i = 0;
         do {
-
-            if (i == 0) {
-                System.out.println("Please, enter distance or Q for exit: ");
-            } else if (i == 1) {
-                System.out.println("Please, enter price per km or Q for exit: ");
-            } else if (i == 2) {
-                System.out.println("Please, enter weight or Q for exit: ");
-            } else {
-                System.out.println("Please, enter price per kg or Q for exit: ");
+            switch (i){
+                case 0:  System.out.println("Please, enter distance or Q for exit: "); break;
+                case 1:  System.out.println("Please, enter weight or Q for exit: "); break;
             }
 
             inputValue = scanner.next();
 
+
             if (!isExitValue(inputValue)) {
                 if (isCorrectDoubleValue(inputValue)) {
+                    switch (i){
+                        case 0:  System.out.println(getPriceDistance(Double.parseDouble(inputValue))); break;
+                        case 1:  System.out.println(getPriceKilogramm(Double.parseDouble(inputValue))); break;
+                    }
                     enteredValues[i] = Double.parseDouble(inputValue);
                     i++;
                 }
             }
 
-            if (i == 4) {
-                Double caclResult = enteredValues[0]*enteredValues[1] + enteredValues[2]*enteredValues[3];
-                System.out.println("Price: $" + caclResult);
+            if (i == 2) {
+                Double calc = enteredValues[0]*getPriceDistance(Double.parseDouble(inputValue))
+                        + enteredValues[1]*getPriceKilogramm(Double.parseDouble(inputValue));
+                System.out.println("Price: $" + calc);
                 i = 0;
             }
 
         } while (!isExitValue(inputValue));
 
-        System.out.println("Finish!");
+        logger.info("Finish!");
 
     }
 
@@ -58,6 +64,5 @@ public class Main {
         }
         return checkResult;
     }
-
 
 }
