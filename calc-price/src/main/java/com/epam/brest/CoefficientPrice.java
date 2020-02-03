@@ -54,21 +54,15 @@ public class CoefficientPrice {
 
 
     private static Double getPrice(Double value, Map<String, Double> mapForSearching){
-         Double priceValue = 0d, result;
-
-         System.out.println(mapForSearching);
+         Double priceValue = 0d;
 
          for(Map.Entry itemFromMap : mapForSearching.entrySet()) {
-             result = Double.parseDouble((String) itemFromMap.getKey());
-             System.out.println(result);
-
-             if(result <= value){
+             if(Double.parseDouble((String) itemFromMap.getKey()) <= value){
                  priceValue = (Double) itemFromMap.getValue();
              }
          }
          return priceValue;
      }
-
 
 }
 
