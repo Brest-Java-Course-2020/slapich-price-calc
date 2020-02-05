@@ -4,6 +4,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
+import static java.lang.Double.parseDouble;
+
 public class CoefficientPrice {
 
     private static final String pathToFileCoefficientPerDistance = "/home/svlapich/development/slapich-price-calc/calc-price/src/main/resources/coefficientPerDistance.json";
@@ -12,15 +14,6 @@ public class CoefficientPrice {
     public CoefficientPrice() {
     }
 
-    private static HashMap getPricePerDistance() throws IOException{
-        ObjectMapper mapperDistance = new ObjectMapper();
-        return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficientPerDistance), HashMap.class);
-    }
-
-    private static HashMap getPricePerKilogramm() throws IOException{
-        ObjectMapper mapperKilogramm = new ObjectMapper();
-        return mapperKilogramm.readValue(readInformationFromFile(pathToFileCoefficientPerKilogramm), HashMap.class);
-    }
 
     private static String readInformationFromFile(String pathToFileCoefficientPerDistance){
         String jsonLine, allString="";
@@ -41,6 +34,44 @@ public class CoefficientPrice {
     }
 
 
+    private static HashMap getPricePerDistance() throws IOException{
+        ObjectMapper mapperDistance = new ObjectMapper();
+        return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficientPerDistance), HashMap.class);
+    }
+
+    private static Double getPricePerKilogramm(Double value) throws IOException{
+        ObjectMapper mapperKilogramm = new ObjectMapper();
+        TreeMap<String, Double> sortedMap = mapperKilogramm.readValue(readInformationFromFile(pathToFileCoefficientPerKilogramm), TreeMap.class);
+
+// sort
+        String stepKey;
+        ArrayList<String> employeeByKey = new ArrayList<>(sortedMap.keySet());
+        for(int i = 0; i< employeeByKey.size()-1; i++){
+            if(parseDouble(employeeByKey.get(i)) > parseDouble(employeeByKey.get(i+1))){
+                stepKey = employeeByKey.get(i+1);
+                employeeByKey.set(i+1, employeeByKey.get(i));
+                employeeByKey.set(i, String.valueOf(stepKey));
+                 }
+        }
+
+        Double priceValue = 0d;
+//get kilogramm in period
+        for(int i = 0; i< employeeByKey.size(); i++){
+            if(parseDouble(employeeByKey.get(i)) <= value){
+                priceValue = Double.parseDouble(employeeByKey.get(i));
+            }
+        }
+
+//get koefficient by kilogramm
+        for (Map.Entry<String, Double> entry : sortedMap.entrySet()) {
+            if (parseDouble((String) entry.getKey()) == priceValue) {
+                priceValue = (Double) entry.getValue();
+            }
+        }
+
+        return priceValue;
+    }
+
 
     static Double getPriceDistance(Double valueDistance) throws IOException {
         return getPrice(valueDistance, getPricePerDistance());
@@ -49,7 +80,7 @@ public class CoefficientPrice {
 
      static Double getPriceKilogramm(Double valueKilogramm) throws IOException {
 
-        return getPrice(valueKilogramm, getPricePerKilogramm());
+        return getPricePerKilogramm(valueKilogramm);
     }
 
 
@@ -57,7 +88,8 @@ public class CoefficientPrice {
          Double priceValue = 0d;
 
          for(Map.Entry itemFromMap : mapForSearching.entrySet()) {
-             if(Double.parseDouble((String) itemFromMap.getKey()) <= value){
+
+             if(parseDouble((String) itemFromMap.getKey()) <= value){
                  priceValue = (Double) itemFromMap.getValue();
              }
          }
