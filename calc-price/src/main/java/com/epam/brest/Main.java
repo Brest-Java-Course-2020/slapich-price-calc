@@ -21,7 +21,7 @@ public class Main {
         int i = 0;
         do {
             switch (i){
-                case 0:  System.out.println("Please, enter distance or Q for exit: "); break;
+                case 0:  System.out.println("enter distance or Q for exit: "); break;
                 case 1:  System.out.println("Please, enter weight or Q for exit: "); break;
             }
 
@@ -71,3 +71,14 @@ public class Main {
     }
 
 }
+
+
+
+// глобальные переменные не допустимы
+// передача разных путей
+
+//создание текстового файло вместо json
+
+// обхединить в один метод два дублирующих
+
+// создание отдельных методов в Main. ДРОБИТЬ КОД
