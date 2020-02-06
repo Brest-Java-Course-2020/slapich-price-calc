@@ -14,19 +14,16 @@ public class CoefficientPrice {
     public CoefficientPrice() {
     }
 
-
-    private static String readInformationFromFile(String pathToFileCoefficientPerDistance){
-        String jsonLine, allString="";
-        try(InputStream inputStream = new FileInputStream(pathToFileCoefficientPerDistance))
-        {
+    private static String readInformationFromFile(String pathToFileCoefficientPerDistance) {
+        String jsonLine, allString = "";
+        try (InputStream inputStream = new FileInputStream(pathToFileCoefficientPerDistance)) {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             jsonLine = bufferedReader.readLine();
             while (jsonLine != null) {
                 allString = allString.concat(jsonLine);
                 jsonLine = bufferedReader.readLine();
             }
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
@@ -34,68 +31,64 @@ public class CoefficientPrice {
     }
 
 
-    private static HashMap getPricePerDistance() throws IOException{
+    static Double getPriceKilogramm(Double value) throws IOException {
+        TreeMap sortedMapKilogramm = getNameSortedMap(pathToFileCoefficientPerKilogramm);
+        return getSortMap(sortedMapKilogramm, value, pathToFileCoefficientPerKilogramm);
+    }
+
+    static Double getPriceDistance(Double value) throws IOException {
+        TreeMap sortedMapDistance = getNameSortedMap(pathToFileCoefficientPerDistance);
+        return getSortMap(sortedMapDistance, value, pathToFileCoefficientPerDistance);
+    }
+
+
+    private static TreeMap getNameSortedMap(String pathToFileCoefficient) throws IOException {
         ObjectMapper mapperDistance = new ObjectMapper();
-        return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficientPerDistance), HashMap.class);
+        return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficient), TreeMap.class);
     }
 
-    private static Double getPricePerKilogramm(Double value) throws IOException{
-        ObjectMapper mapperKilogramm = new ObjectMapper();
-        TreeMap<String, Double> sortedMap = mapperKilogramm.readValue(readInformationFromFile(pathToFileCoefficientPerKilogramm), TreeMap.class);
 
-// sort
+    private static Double getSortMap(TreeMap sortedMap, Double valueFromCompare, String pathNameFile) throws IOException {
         String stepKey;
-        ArrayList<String> employeeByKey = new ArrayList<>(sortedMap.keySet());
-        for(int i = 0; i< employeeByKey.size()-1; i++){
-            if(parseDouble(employeeByKey.get(i)) > parseDouble(employeeByKey.get(i+1))){
-                stepKey = employeeByKey.get(i+1);
-                employeeByKey.set(i+1, employeeByKey.get(i));
-                employeeByKey.set(i, String.valueOf(stepKey));
-                 }
+        ArrayList<String> sortedMapByKey = new ArrayList<>(sortedMap.keySet());
+        for (int i = 0; i < sortedMapByKey.size() - 1; i++) {
+            if (parseDouble(sortedMapByKey.get(i)) > parseDouble(sortedMapByKey.get(i+1))) {
+                stepKey = sortedMapByKey.get(i + 1);
+                sortedMapByKey.set(i + 1, sortedMapByKey.get(i));
+                sortedMapByKey.set(i, String.valueOf(stepKey));
+            }
         }
+        return getRealValueFromMap(sortedMapByKey, valueFromCompare, pathNameFile);
+    }
 
-        Double priceValue = 0d;
-//get kilogramm in period
-        for(int i = 0; i< employeeByKey.size(); i++){
-            if(parseDouble(employeeByKey.get(i)) <= value){
-                priceValue = Double.parseDouble(employeeByKey.get(i));
+
+    private static Double getRealValueFromMap(List<String> sortedMapByKey, Double valueFromCompare, String pathNameFile) throws IOException { //get kilogramm in period
+        double priceNeedValue = 0d;
+
+        for (String s : sortedMapByKey) {
+            if (parseDouble(s) <= valueFromCompare) {
+                priceNeedValue = parseDouble(s);
+
             }
         }
 
-//get koefficient by kilogramm
+        return getRealCoefficienFromtMap(priceNeedValue, getNameSortedMap(pathNameFile));
+    }
+
+
+    private static Double getRealCoefficienFromtMap(Double valueRealValue, TreeMap<String, Double> sortedMap) { //get koefficient by kilogramm
+        double priceRealCoefficienValue = 0d;
+
         for (Map.Entry<String, Double> entry : sortedMap.entrySet()) {
-            if (parseDouble((String) entry.getKey()) == priceValue) {
-                priceValue = (Double) entry.getValue();
+            if (parseDouble(entry.getKey()) == valueRealValue) {
+                priceRealCoefficienValue = entry.getValue();
             }
         }
-
-        return priceValue;
+        return priceRealCoefficienValue;
     }
-
-
-    static Double getPriceDistance(Double valueDistance) throws IOException {
-        return getPrice(valueDistance, getPricePerDistance());
-    }
-
-
-     static Double getPriceKilogramm(Double valueKilogramm) throws IOException {
-
-        return getPricePerKilogramm(valueKilogramm);
-    }
-
-
-    private static Double getPrice(Double value, Map<String, Double> mapForSearching){
-         Double priceValue = 0d;
-
-         for(Map.Entry itemFromMap : mapForSearching.entrySet()) {
-
-             if(parseDouble((String) itemFromMap.getKey()) <= value){
-                 priceValue = (Double) itemFromMap.getValue();
-             }
-         }
-         return priceValue;
-     }
 
 }
+
+
 
 
