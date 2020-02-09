@@ -2,83 +2,11 @@ package com.epam.brest;
 
 
 import java.io.*;
-import java.util.Scanner;
-import java.util.logging.Logger;
-import static com.epam.brest.CoefficientPrice.*;
 
 public class Main {
 
-    private final static Logger logger = Logger.getLogger(String.valueOf(Main.class));
-    private static Double koefficientDistance, koefficientKilogramm;
-
-
-    public static void main(String[] args) throws IOException{
-
-        Double[] enteredValues = new Double[2];
-
-        Scanner scanner = new Scanner(System.in);
-        String inputValue;
-        int i = 0;
-        do {
-            switch (i){
-                case 0:  System.out.println("enter distance or Q for exit: "); break;
-                case 1:  System.out.println("Please, enter weight or Q for exit: "); break;
-            }
-
-            inputValue = scanner.next();
-
-
-            if (!isExitValue(inputValue)) {
-                if (isCorrectDoubleValue(inputValue)) {
-                    switch (i){
-                        case 0: koefficientDistance = getPriceDistance(Double.parseDouble(inputValue));
-                        System.out.println(koefficientDistance);
-                            break;
-                        case 1:  koefficientKilogramm = getPriceKilogramm(Double.parseDouble(inputValue));
-                            System.out.println(koefficientKilogramm);
-                            break;
-                    }
-                    enteredValues[i] = Double.parseDouble(inputValue);
-                    i++;
-                }
-            }
-
-            if (i == 2) {
-                double calc = enteredValues[0]*koefficientDistance + enteredValues[1]*koefficientKilogramm;
-                System.out.println("Price: $" + calc);
-                i = 0;
-            }
-
-        } while (!isExitValue(inputValue));
-
-        logger.info("Finish!");
-
+    public static void main(String[] args) throws IOException {
+        CalculationPrice.getResultFromCalculationPrice();
     }
-
-    private static boolean isExitValue(String value) {
-        return value.equalsIgnoreCase("Q");
-    }
-
-    private static boolean isCorrectDoubleValue(String value) {
-        boolean checkResult;
-        try {
-            double enteredDoubleValue = Double.parseDouble(value);
-            checkResult = enteredDoubleValue >= 0;
-        } catch (NumberFormatException ex) {
-            checkResult = false;
-        }
-        return checkResult;
-    }
-
 }
 
-
-
-// глобальные переменные не допустимы
-// передача разных путей
-
-//создание текстового файло вместо json
-
-// обхединить в один метод два дублирующих
-
-// создание отдельных методов в Main. ДРОБИТЬ КОД
