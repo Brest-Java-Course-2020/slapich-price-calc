@@ -1,6 +1,5 @@
 package com.epam.brest;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import java.io.*;
 import java.util.*;
 
@@ -14,37 +13,14 @@ public class CoefficientPrice {
     public CoefficientPrice() {
     }
 
-    private static String readInformationFromFile(String pathToFileCoefficientPerDistance) {
-        String jsonLine, allString = "";
-        try (InputStream inputStream = new FileInputStream(pathToFileCoefficientPerDistance)) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            jsonLine = bufferedReader.readLine();
-            while (jsonLine != null) {
-                allString = allString.concat(jsonLine);
-                jsonLine = bufferedReader.readLine();
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return allString;
-    }
-
-
     static Double getPriceKilogramm(Double value) throws IOException {
-        TreeMap sortedMapKilogramm = getNameSortedMap(pathToFileCoefficientPerKilogramm);
+        TreeMap sortedMapKilogramm = FileReader.getNameSortedMap(pathToFileCoefficientPerKilogramm);
         return getSortMap(sortedMapKilogramm, value, pathToFileCoefficientPerKilogramm);
     }
 
     static Double getPriceDistance(Double value) throws IOException {
-        TreeMap sortedMapDistance = getNameSortedMap(pathToFileCoefficientPerDistance);
+        TreeMap sortedMapDistance = FileReader.getNameSortedMap(pathToFileCoefficientPerDistance);
         return getSortMap(sortedMapDistance, value, pathToFileCoefficientPerDistance);
-    }
-
-
-    private static TreeMap getNameSortedMap(String pathToFileCoefficient) throws IOException {
-        ObjectMapper mapperDistance = new ObjectMapper();
-        return mapperDistance.readValue(readInformationFromFile(pathToFileCoefficient), TreeMap.class);
     }
 
 
@@ -68,11 +44,9 @@ public class CoefficientPrice {
         for (String s : sortedMapByKey) {
             if (parseDouble(s) <= valueFromCompare) {
                 priceNeedValue = parseDouble(s);
-
             }
         }
-
-        return getRealCoefficienFromtMap(priceNeedValue, getNameSortedMap(pathNameFile));
+        return getRealCoefficienFromtMap(priceNeedValue, FileReader.getNameSortedMap(pathNameFile));
     }
 
 
